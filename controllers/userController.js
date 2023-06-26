@@ -10,8 +10,12 @@ const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       generateToken(res, user._id);
       return res.send({ status: 1, message: "Login Successful" });
+    } else {
+      return res.send({ status: 0, message: "Invalid email or Password" });
     }
-  } else return res.send({ status: 0, message: "Invalid email or Password" });
+  } else {
+    return res.send({ status: 0, message: "No User found" });
+  }
 };
 
 // endPoint: /api/users/register

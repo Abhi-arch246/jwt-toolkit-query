@@ -19,22 +19,24 @@ function Login() {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (userInfo) navigate("/");
-  }, [navigate, userInfo]);
+  // useEffect(() => {
+  //   if (userInfo) navigate("/home");
+  // }, [navigate, userInfo]);
 
   const loginSubmit = async (data, e) => {
     e.preventDefault();
-    const { email, password } = data;
+
     try {
-      const res = await loginUser({ email, password }).unwrap();
+      const res = await loginUser(data).unwrap();
       dispatch(setCredentials({ ...res }));
+
       if (res.status) {
         toast.success(res.message);
+        localStorage.setItem("userInfo", JSON.stringify(res));
+        navigate("/home");
       } else {
         toast.error(res.message);
       }
-      navigate("/");
     } catch (error) {
       console.log(error);
     }
