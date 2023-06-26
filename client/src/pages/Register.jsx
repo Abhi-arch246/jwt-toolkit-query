@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useRegistMutation } from "../slices/usersApiSlice";
+import { useRegisterUserMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -15,14 +15,15 @@ function Register() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [regist, { isLoading }] = useRegistMutation();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (userInfo) navigate("/home");
-  }, [navigate, userInfo]);
+  // useEffect(() => {
+  //   if (userInfo) navigate("/home");
+  // }, [navigate, userInfo]);
 
-  const registerSubmit = async (data) => {
+  const registerSubmit = async (data, e) => {
+    e.preventDefault();
     if (data.password !== data.cpassword)
       toast.error("Password's should match");
     else {
@@ -32,9 +33,10 @@ function Register() {
         password: data.password,
       };
       try {
-        const res = await regist(userData).unwrap();
+        const res = await registerUser(userData).unwrap();
         dispatch(setCredentials({ ...res }));
-        toast.success("Registered successfully, Go to login page");
+        if (res.status) toast.success(res.message);
+        else toast.error(res.message);
       } catch (error) {
         console.log(error);
       }

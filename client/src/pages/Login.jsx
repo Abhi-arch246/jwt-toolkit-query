@@ -1,6 +1,10 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useLoginUserMutation } from "../slices/usersApiSlice";
+import { setCredentials } from "../slices/authSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 function Login() {
   const {
@@ -8,8 +12,32 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const loginSubmit = (data) => {
-    console.log(data);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) navigate("/");
+  }, [navigate, userInfo]);
+
+  const loginSubmit = async (data, e) => {
+    e.preventDefault();
+    const { email, password } = data;
+    try {
+      const res = await loginUser({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      if (res.status) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -62,6 +90,7 @@ function Login() {
           </Link>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 }

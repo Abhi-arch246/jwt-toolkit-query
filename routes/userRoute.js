@@ -6,10 +6,11 @@ const {
   registerUser,
   updateUserData,
 } = require("../controllers/userController");
+const protected = require("../config/authMiddleware");
 
 router.post("/login", loginUser);
 router.post("/register", registerUser);
-router.get("/userdata", getUserData);
-router.post("/updatedata", updateUserData);
+router.get("/userdata", protected, getUserData);
+router.post("/updatedata", protected, updateUserData);
 
 module.exports = router;
