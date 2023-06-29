@@ -1,11 +1,22 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useLogOutMutation } from "../slices/usersApiSlice";
+import { logOut } from "../slices/authSlice";
 
 function Nav() {
+  const dispatch = useDispatch();
+  const local = JSON.parse(localStorage.getItem("userInfo"));
+  const [logOutApiCall] = useLogOutMutation();
   const navigate = useNavigate();
-  const signOut = () => {
-    localStorage.removeItem("userInfo");
-    navigate("/");
+  const logOutSubmit = async () => {
+    try {
+      await logOutApiCall().unwrap();
+      dispatch(logOut());
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -13,12 +24,16 @@ function Nav() {
       <h1 className="p-2 text-2xl">MERN Toolkit JWT</h1>
       <div className="p-2 space-x-6">
         <Link className="hover:text-slate-500" to="/home">
-          Home
+          {local.name}
         </Link>
         <Link className="hover:text-slate-500" to="/profile">
           Profile
         </Link>
-        <Link onClick={signOut} className="hover:text-slate-500" to="/home">
+        <Link
+          onClick={logOutSubmit}
+          className="hover:text-slate-500"
+          to="/home"
+        >
           Sign out
         </Link>
       </div>

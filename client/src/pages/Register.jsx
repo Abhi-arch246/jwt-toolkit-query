@@ -18,9 +18,9 @@ function Register() {
   const [registerUser, { isLoading }] = useRegisterUserMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // useEffect(() => {
-  //   if (userInfo) navigate("/home");
-  // }, [navigate, userInfo]);
+  useEffect(() => {
+    if (userInfo) navigate("/home");
+  }, [navigate, userInfo]);
 
   const registerSubmit = async (data, e) => {
     e.preventDefault();

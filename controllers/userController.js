@@ -9,7 +9,13 @@ const loginUser = async (req, res) => {
   if (user) {
     if (user && (await bcrypt.compare(password, user.password))) {
       generateToken(res, user._id);
-      return res.send({ status: 1, message: "Login Successful" });
+      return res.send({
+        status: 1,
+        message: "Login Successful",
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      });
     } else {
       return res.send({ status: 0, message: "Invalid email or Password" });
     }
