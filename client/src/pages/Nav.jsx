@@ -3,19 +3,21 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogOutMutation } from "../slices/usersApiSlice";
 import { logOut } from "../slices/authSlice";
+import { BiSolidUserCircle } from "react-icons/bi";
+import { FaSignOutAlt } from "react-icons/fa";
 
 function Nav() {
-  const dispatch = useDispatch();
   const local = JSON.parse(localStorage.getItem("userInfo"));
-  const [logOutApiCall] = useLogOutMutation();
+  const [logoutApiCall] = useLogOutMutation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const logOutSubmit = async () => {
     try {
-      await logOutApiCall().unwrap();
+      await logoutApiCall().unwrap();
       dispatch(logOut());
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.log(error.error);
     }
   };
 
@@ -24,16 +26,14 @@ function Nav() {
       <h1 className="p-2 text-2xl">MERN Toolkit JWT</h1>
       <div className="p-2 space-x-6">
         <Link className="hover:text-slate-500" to="/home">
-          {local.name}
+          Home
         </Link>
         <Link className="hover:text-slate-500" to="/profile">
-          Profile
+          <BiSolidUserCircle size={25} className="inline" />
+          {local.name}
         </Link>
-        <Link
-          onClick={logOutSubmit}
-          className="hover:text-slate-500"
-          to="/home"
-        >
+        <Link onClick={logOutSubmit} className="hover:text-slate-500">
+          <FaSignOutAlt size={25} className="inline" />
           Sign out
         </Link>
       </div>

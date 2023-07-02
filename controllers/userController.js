@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
 };
 
 // endPoint: /api/users/logout
-const logoutUser = async (req, res) => {
+const logoutUser = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(0),
@@ -68,9 +68,30 @@ const getUserData = async (req, res) => {
   res.json({ message: "User data fetched" });
 };
 
-// endPoint: /api/users/updatedata
+// endPoint: /api/users/update
 const updateUserData = async (req, res) => {
-  res.json({ message: "User data updated" });
+  const user = await User.findById(req.user._id);
+  if (user && (await bcrypt.compare(req.body.cupassword, user.password))) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const result = await User.findByIdAndUpdate(user._id, {
+      name: req.body.name || user.name,
+      email: req.body.email,
+      password: hashedPassword,
+    });
+
+    if (result) {
+      return res.send({
+        status: true,
+        message:
+          "User details updated successfully, you'll redirected to login",
+      });
+    } else {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+  } else {
+    return res.json({ status: false, message: "Current password is invalid" });
+  }
 };
 
 module.exports = {

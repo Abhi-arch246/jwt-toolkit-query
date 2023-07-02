@@ -19,9 +19,9 @@ function Login() {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (userInfo) navigate("/home");
-  }, [navigate, userInfo]);
+  // useEffect(() => {
+  //   if (userInfo) navigate("/home");
+  // }, [navigate, userInfo]);
 
   const loginSubmit = async (data, e) => {
     e.preventDefault();
